@@ -1,0 +1,59 @@
+name: Bug report
+description: Something does not work the way the docs say it should
+labels: [bug, needs repro]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping! The more exact you are, the faster we can fix it.
+        Many problems depend on the terminal, so the last four questions matter.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The exact command you ran and the requests you sent (for example the curl line).
+      placeholder: |
+        1. portbell -p 9000
+        2. curl -X POST localhost:9000/x -d 'hello'
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `portbell --version`
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [Windows, macOS, Linux, Other]
+    validations:
+      required: true
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal
+      description: For example Windows Terminal, iTerm2, GNOME Terminal, the VS Code terminal
+    validations:
+      required: true
+  - type: input
+    id: multiplexer
+    attributes:
+      label: Using tmux, screen or SSH?
+      description: Say "no" if you are not.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Screenshots, your portbell.toml, error text.

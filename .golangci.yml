@@ -1,0 +1,26 @@
+# golangci-lint v2 configuration.
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    - bodyclose
+    - errorlint
+    - gocritic
+    - misspell
+    - noctx
+    - unconvert
+    - unparam
+  exclusions:
+    presets:
+      - std-error-handling
+    rules:
+      # Tests talk to local servers; threading a context through every call adds noise.
+      - path: _test\.go
+        linters:
+          - noctx
+
+formatters:
+  enable:
+    - gofmt
+    - goimports

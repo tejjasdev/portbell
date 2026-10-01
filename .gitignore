@@ -1,0 +1,18 @@
+# Build output
+/bin/
+/dist/
+/portbell
+/portbell.exe
+*.test
+*.out
+coverage.*
+
+# Saved requests made while trying the tool
+/portbell-saved/
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

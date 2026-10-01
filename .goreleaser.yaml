@@ -1,0 +1,57 @@
+# GoReleaser configuration. A pushed tag like v0.1.0 builds and publishes a release.
+# Docs: https://goreleaser.com
+version: 2
+
+project_name: portbell
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - id: portbell
+    main: ./cmd/portbell
+    binary: portbell
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/tejjasdev/portbell/internal/version.Version={{.Version}}
+      - -X github.com/tejjasdev/portbell/internal/version.Commit={{.ShortCommit}}
+      - -X github.com/tejjasdev/portbell/internal/version.Date={{.Date}}
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE
+      - README.md
+      - THIRD_PARTY_NOTICES.md
+      - CHANGELOG.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+# Package manager publishing is switched on in v0.2 once the tap and bucket
+# repositories exist (see docs/releasing.md):
+#
+# brews:
+#   - repository: { owner: tejjasdev, name: homebrew-tap }
+# scoops:
+#   - repository: { owner: tejjasdev, name: scoop-bucket }

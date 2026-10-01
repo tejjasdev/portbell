@@ -1,0 +1,13 @@
+# Example config. Copy to ./portbell.toml and edit. Every key is optional.
+# See docs/configuration.md for the full list.
+version = 1
+
+[server]
+port = 9000
+cors = true
+
+[reply]
+status = 200
+headers = ["Content-Type: application/json"]
+body = '{"order": "${PORTBELL_ORDER_ID}"}'
+delay = "250ms"
