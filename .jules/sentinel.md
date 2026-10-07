@@ -1,0 +1,4 @@
+## 2025-02-28 - Missing Write Deadline for HTTP Server Handlers
+**Vulnerability:** The HTTP server handlers, including CORS preflight handling, missed an explicit write deadline for standard responses, potentially causing the server to hang or consume resources against a slow reader (slowloris-style attack). Only delayed responses had a write deadline configured previously.
+**Learning:** `http.Server` configured with `ReadTimeout` does not apply to writing the response. Unless `WriteTimeout` is configured at the server level, or `SetWriteDeadline` is set explicitly on the ResponseController/connection per request, the handlers can block indefinitely when trying to send data to slow clients.
+**Prevention:** Always ensure an explicit write deadline using `http.NewResponseController(w).SetWriteDeadline(...)` for every request before calling `w.Write`, or set a server-level `WriteTimeout`.
