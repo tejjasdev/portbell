@@ -167,12 +167,29 @@ func (r *Responder) Set(s Spec) error {
 	return nil
 }
 
+func sanitizeHeaderValue(v string) string {
+	if validHeaderValue(v) {
+		return v
+	}
+	var b strings.Builder
+	b.Grow(len(v))
+	for i := 0; i < len(v); i++ {
+		c := v[i]
+		if c == '\t' || (c >= 0x20 && c != 0x7f) {
+			b.WriteByte(c)
+		} else {
+			b.WriteByte(' ')
+		}
+	}
+	return b.String()
+}
+
 // Render returns the reply to send now, with placeholders expanded.
 func (r *Responder) Render() events.Response {
 	s := r.Get()
 	headers := make([]events.Header, len(s.Headers))
 	for i, h := range s.Headers {
-		headers[i] = events.Header{Name: h.Name, Value: r.env.Expand(h.Value)}
+		headers[i] = events.Header{Name: h.Name, Value: sanitizeHeaderValue(r.env.Expand(h.Value))}
 	}
 	return events.Response{
 		Status:  s.Status,

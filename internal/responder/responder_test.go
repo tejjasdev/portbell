@@ -124,3 +124,21 @@ func TestFormatParseRoundTrip(t *testing.T) {
 		t.Fatalf("round trip mismatch: %+v", back)
 	}
 }
+
+func TestResponderRenderSanitizesHeaders(t *testing.T) {
+	env := map[string]string{"PORTBELL_INJECT": "val\r\nInjected: 1"}
+	p := EnvPolicy{
+		Prefix: "PORTBELL_",
+		Lookup: func(k string) (string, bool) { v, ok := env[k]; return v, ok },
+	}
+	r := New(Spec{
+		Status:  200,
+		Headers: []events.Header{{Name: "X-Test", Value: "${PORTBELL_INJECT}"}},
+		Body:    "body",
+	}, p)
+
+	out := r.Render()
+	if out.Headers[0].Value != "val  Injected: 1" {
+		t.Fatalf("expected sanitized header, got %q", out.Headers[0].Value)
+	}
+}
