@@ -21,7 +21,7 @@ import (
 const Redacted = "REDACTED"
 
 // DefaultRedactHeaders lists headers whose values are hidden on export.
-var DefaultRedactHeaders = []string{"Authorization", "Cookie", "Proxy-Authorization", "X-Api-Key"}
+var DefaultRedactHeaders = []string{"Authorization", "Cookie", "Proxy-Authorization", "X-Api-Key", "Set-Cookie"}
 
 // skippedInCurl are headers curl sets by itself.
 var skippedInCurl = map[string]bool{"host": true, "content-length": true, "transfer-encoding": true, "connection": true}
@@ -89,7 +89,8 @@ func SaveRequest(dir string, ev events.Event, redact bool) (string, error) {
 	if dir == "" {
 		dir = "."
 	}
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	// Create directory with 0o700 (owner only) to protect saved requests containing sensitive data.
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", err
 	}
 	method := cleanName(ev.Request.Method)
