@@ -89,7 +89,7 @@ func SaveRequest(dir string, ev events.Event, redact bool) (string, error) {
 	if dir == "" {
 		dir = "."
 	}
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", err
 	}
 	method := cleanName(ev.Request.Method)
