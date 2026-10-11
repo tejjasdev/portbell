@@ -172,7 +172,10 @@ func (r *Responder) Render() events.Response {
 	s := r.Get()
 	headers := make([]events.Header, len(s.Headers))
 	for i, h := range s.Headers {
-		headers[i] = events.Header{Name: h.Name, Value: r.env.Expand(h.Value)}
+		val := r.env.Expand(h.Value)
+		val = strings.ReplaceAll(val, "\r", "")
+		val = strings.ReplaceAll(val, "\n", "")
+		headers[i] = events.Header{Name: h.Name, Value: val}
 	}
 	return events.Response{
 		Status:  s.Status,
