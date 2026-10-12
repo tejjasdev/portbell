@@ -76,6 +76,7 @@ func (s *Server) Serve(ctx context.Context) error {
 		Handler:           s,
 		ReadHeaderTimeout: 10 * time.Second,
 		ReadTimeout:       readTimeout,
+		WriteTimeout:      60 * time.Second,
 		IdleTimeout:       60 * time.Second,
 		MaxHeaderBytes:    64 << 10,
 		ErrorLog:          log.New(io.Discard, "", 0), // never write over the screen
