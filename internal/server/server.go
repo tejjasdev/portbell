@@ -124,8 +124,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := s.resp.Render()
+	_ = http.NewResponseController(w).SetWriteDeadline(time.Now().Add(resp.Delay + 30*time.Second))
 	if resp.Delay > 0 {
-		_ = http.NewResponseController(w).SetWriteDeadline(time.Now().Add(resp.Delay + 30*time.Second))
 		timer := time.NewTimer(resp.Delay)
 		defer timer.Stop()
 		select {

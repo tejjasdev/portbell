@@ -1,0 +1,4 @@
+## 2024-05-18 - Missing WriteTimeout
+**Vulnerability:** The HTTP server in `internal/server/server.go` was missing a default `WriteTimeout` configuration when there was no request delay (`resp.Delay > 0`), which leaves the server vulnerable to resource exhaustion or Slowloris-style slow-read attacks.
+**Learning:** In Go `net/http` servers with dynamic response delay configurations, developers sometimes forget to apply the timeout universally. Here, the `SetWriteDeadline` call was inside the `if resp.Delay > 0` condition, meaning that without a configured delay, connections could potentially hang open indefinitely waiting for client reads.
+**Prevention:** Always ensure that network connections have bounded wait/read/write times (deadlines or timeouts). When using Go 1.20+ `http.ResponseController(w).SetWriteDeadline()`, configure a generous base deadline globally, even if the primary goal is supporting long deliberate delays.
