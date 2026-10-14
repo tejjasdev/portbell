@@ -1,0 +1,4 @@
+## 2024-05-24 - [Unconditional WriteDeadlines for Dynamic Server Timeouts]
+**Vulnerability:** A Slowloris-style slow read attack was possible because the server omitted a global `WriteTimeout` (to support user-configured dynamic delays on responses) but only applied `SetWriteDeadline` when a delay was configured > 0.
+**Learning:** When you omit `WriteTimeout` on an `http.Server` to allow for dynamic, per-request deadlines, you must ensure that *every* request handler branch explicitly calls `SetWriteDeadline`. Any code path (such as returning a fast 0-delay response, or handling CORS preflight requests) that fails to set a deadline leaves the connection open indefinitely to slow readers.
+**Prevention:** Always verify that a fallback or explicit `WriteDeadline` is applied unconditionally for every request if the global `http.Server.WriteTimeout` is zero.
