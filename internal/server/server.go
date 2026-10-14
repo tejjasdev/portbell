@@ -116,7 +116,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		BodyTruncated: truncated,
 	})
 
+	rc := http.NewResponseController(w)
+
 	if s.opts.CORS && isPreflight(r) {
+		_ = rc.SetWriteDeadline(time.Now().Add(30 * time.Second))
 		resp := events.Response{Status: http.StatusNoContent, Headers: corsHeaders(r, true)}
 		write(w, resp)
 		s.store.Complete(id, resp, time.Since(start))
@@ -124,8 +127,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := s.resp.Render()
+	_ = rc.SetWriteDeadline(time.Now().Add(resp.Delay + 30*time.Second))
 	if resp.Delay > 0 {
-		_ = http.NewResponseController(w).SetWriteDeadline(time.Now().Add(resp.Delay + 30*time.Second))
 		timer := time.NewTimer(resp.Delay)
 		defer timer.Stop()
 		select {
