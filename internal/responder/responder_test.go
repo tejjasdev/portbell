@@ -72,6 +72,24 @@ func TestResponderSetValidatesAndRenders(t *testing.T) {
 	}
 }
 
+func TestRenderSanitizesCRLFInHeaders(t *testing.T) {
+	env := map[string]string{"PORTBELL_INJECT": "a\r\nb\tc\n\x00d"}
+	p := EnvPolicy{Prefix: "PORTBELL_", Lookup: func(k string) (string, bool) {
+		v, ok := env[k]
+		return v, ok
+	}}
+	r := New(Spec{
+		Status: 200,
+		Headers: []events.Header{
+			{Name: "X-Inject", Value: "${PORTBELL_INJECT}"},
+		},
+	}, p)
+	got := r.Render()
+	if len(got.Headers) != 1 || got.Headers[0].Value != "ab\tcd" {
+		t.Errorf("unexpected header value: %q", got.Headers[0].Value)
+	}
+}
+
 func TestParseHTTP(t *testing.T) {
 	in := "HTTP/1.1 201 Created\r\nContent-Type: application/json\r\nX-A:  b \r\n\r\n{\"ok\": true}\nline2"
 	spec, err := ParseHTTP(strings.NewReader(in))
