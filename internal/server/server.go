@@ -95,7 +95,8 @@ func (s *Server) Serve(ctx context.Context) error {
 		if err := srv.Shutdown(shutdownCtx); err != nil {
 			_ = srv.Close()
 		}
-		<-errc
+		// Wait for the server to finish
+		<-errc //nolint:errcheck
 		return nil
 	}
 }
